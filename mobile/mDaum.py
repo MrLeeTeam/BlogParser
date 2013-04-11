@@ -12,12 +12,15 @@ def main():
     print dic
 
 
-def get_article(url):
+def get_article(url, mode=None):
 
-    returnee = dict()
-    agent = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/1A542a Safari/419.3"
+    returnee = {}
 
-    structure = requests.get(url, headers={"User-Agent": agent})
+    if not mode:
+        agent = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/1A542a Safari/419.3"
+        structure = requests.get(url, headers={"User-Agent": agent})
+    else:
+        structure = mode
     charset = structure.encoding
 
     tree = html.fromstring(structure.text)
@@ -35,7 +38,7 @@ def get_article(url):
 
 
 def get_images(article):
-    urls = list()
+    urls = []
     images = article.cssselect("img")
     for image in images:
         urls.append(image.get("src"))
