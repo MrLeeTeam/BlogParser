@@ -6,17 +6,22 @@ from mobile import mTistory, mDaum
 import requests
 import psycopg2cffi as psycopg2
 
+# -*- Constant -*-
+UserAgent = """
+            Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) \
+            AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/1A542a Safari/419.3
+            """
+
 
 def main():
-    data = {}
-    h_id, host, realm, last_crawled, last_post = get_meta()
+    h_id, host, realm, last_crawl, last_post = get_meta()
     flag(h_id, 1)
-    article_list = get_article_list(host, last_post)
+    article_list = get_article_list(host, realm, last_post)
 
     for article in article_list:
-        data = separator(article, realm)
+        data = get_article(article, realm)
+        save(data, h_id)
 
-    save(data, host)
     flag(h_id, 0)
 
 
@@ -31,7 +36,6 @@ def get_meta():  # Set Flag, Get Host, Get Realm, Get Date
 
     except conn:
         print "err"
-        pass
 
     h_id = 22
     host = "http://haeho.com/m/227"
@@ -43,6 +47,10 @@ def get_meta():  # Set Flag, Get Host, Get Realm, Get Date
 
 
 def flag(h_id, sw):
+    ids = ""
+    for ido in h_id:
+        ids += "%s" % ido if len(ids) == 0 else ",%s" % ido
+
     if sw == 0:
         # Unset Flag
         pass
@@ -52,20 +60,31 @@ def flag(h_id, sw):
         pass
 
 
-def get_article_list(host, lc, lp):
+def get_article_list(host, realm=None, lp=None):
+    re = requests.get(host, headers={"User-agent": UserAgent})
+    article_list = []
+
+    if realm == "Tistory" or "tistory.com" in re.text:
+        article_list = mTistory.get_article_list(host, lp)
+    #
+    # elif realm == "Daum" or "blog.daum.net" in host:
+    #     pass
+    #
+    # elif realm == "Naver" or "naver.com" in re.text:
+    #     pass
+    #
+    # elif realm == "Egloos" or "egloos.com" in re.text:
+    #     pass
+
+    return article_list
+
+
+def save(data, h_id):  # Save data to db
     pass
 
 
-def save(data, url):  # Save data to db
-    pass
-
-
-def separator(url, realm=None):
-    agent = """
-    Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us)\
-    AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/1A542a Safari/419.3
-    """
-    re = requests.get(url, headers={"User-agent": agent})
+def get_article(url, realm=None):
+    re = requests.get(url, headers={"User-agent": UserAgent})
     data = {}
 
     if realm == "Tistory" or "tistory.com" in re.text:
@@ -84,4 +103,5 @@ def separator(url, realm=None):
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    flag(["15", "19", "20", "26", "27", "29"], 0)

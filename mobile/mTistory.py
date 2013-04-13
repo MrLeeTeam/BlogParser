@@ -53,5 +53,36 @@ def get_images(article):
     return urls
 
 
+def get_article_list(host, lp=None):
+    flag, page = 1, 1
+    returnee = []
+    while flag:
+        obj = host + "/m/post/list/page/%d" % page
+        re = requests.get(obj)
+        tree = html.fromstring(re.text)
+
+        articles = tree.cssselect("ul#articleList")[0].cssselect("li")
+
+        for article in articles:
+            url = host + article.cssselect("a")[0].get("href")
+            if lp and (DATE.parse(article.cssselect("span.datetime")[0].text) - DATE.parse(lp)).days < 0:
+                flag = 0
+                break
+
+            else:
+                returnee.append(url)
+
+        if not "tPostController.getPost" in re.text or not "nextPage" in re.text:
+            flag = 0
+
+        # print page, "Page Complete!"
+        page += 1
+
+    return returnee
+
+
 if __name__ == "__main__":
-    main()
+    # main()
+    # articles = get_article_list("http://imuky.tistory.com")
+    articles = get_article_list("http://ansanstory.com", "2012/03/17 15:20")
+    print articles

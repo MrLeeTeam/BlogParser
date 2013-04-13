@@ -17,7 +17,10 @@ def get_article(url, mode=None):
     returnee = {}
 
     if not mode:
-        agent = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/1A542a Safari/419.3"
+        agent = """
+        Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us)\
+        AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/1A542a Safari/419.3
+        """
         structure = requests.get(url, headers={"User-Agent": agent})
 
     else:
