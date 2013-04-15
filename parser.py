@@ -1,7 +1,7 @@
 __author__ = 'jaeyoung'
 
 
-from mobile import mTistory, mDaum
+from mobile import mTistory, mDaum, mEgloos, mNaver
 
 import requests
 import psycopg2cffi as psycopg2
@@ -15,14 +15,14 @@ UserAgent = """
 
 def main():
     h_id, host, realm, last_crawl, last_post = get_meta()
-    flag(h_id, 1)
+    flag(h_id, 1)  # Set flag
     article_list = get_article_list(host, realm, last_post)
 
-    for article in article_list:
+    for article in article_list:  # parse article and save to database
         data = get_article(article, realm)
         save(data, h_id)
 
-    flag(h_id, 0)
+    flag(h_id, 0)  # Unset flag
 
 
 def get_meta():  # Set Flag, Get Host, Get Realm, Get Date
@@ -72,9 +72,9 @@ def get_article_list(host, realm=None, lp=None):
     #
     # elif realm == "Naver" or "naver.com" in re.text:
     #     pass
-    #
-    # elif realm == "Egloos" or "egloos.com" in re.text:
-    #     pass
+
+    elif realm == "Egloos" or "egloos.com" in re.text:
+        article_list = mEgloos.get_article_list(host, lp)
 
     return article_list
 
@@ -94,14 +94,14 @@ def get_article(url, realm=None):
         data = mDaum.get_article(url, re)
 
     elif realm == "Naver" or "naver.com" in re.text:
-        pass
+        data = mNaver.get_article(url, re)
 
     elif realm == "Egloos" or "egloos.com" in re.text:
-        pass
+        data = mEgloos.get_article(url, re)
 
     return data
 
 
 if __name__ == "__main__":
-    # main()
-    flag(["15", "19", "20", "26", "27", "29"], 0)
+    main()
+    # flag(["15", "19", "20", "26", "27", "29"], 0)
