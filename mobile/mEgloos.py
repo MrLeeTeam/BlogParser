@@ -4,6 +4,7 @@ from dateutil import parser as DATE
 from datetime import date as NOW
 
 import requests
+import time
 
 
 def main():
@@ -13,6 +14,7 @@ def main():
 def get_article(url, mode=None):
 
     returnee = {}
+    now = time.localtime()
 
     if not mode:
         agent = """
@@ -38,6 +40,7 @@ def get_article(url, mode=None):
     article = tree.cssselect("div#post_contents")[0]
     returnee["content"] = st.strip_html(html.tostring(article, encoding=charset, method="html"))
     returnee["images"] = get_images(article)
+    returnee["post_id"] = url[url.rfind("/")+1:]
 
     return returnee
 

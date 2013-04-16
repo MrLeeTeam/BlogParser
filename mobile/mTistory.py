@@ -39,6 +39,7 @@ def get_article(url, mode=None):
     article = body.cssselect("div.area_content")[0]
     returnee["content"] = st.strip_html(html.tostring(article, encoding=charset, method="html"))
     returnee["images"] = get_images(article)
+    returnee["post_id"] = url[url.rfind("/")+1:]
 
     return returnee
 
