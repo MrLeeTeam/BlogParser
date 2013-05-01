@@ -8,6 +8,8 @@ from dateutil import parser as DATE
 import requests
 
 
+
+
 def main():
     print get_article("http://lovegadget.tistory.com/1383")
 
@@ -34,10 +36,11 @@ def get_article(url, mode=None):
     returnee["title"] = html.tostring(body.cssselect("div.area_tit h2 a")[0], encoding=charset, method="text")
     info = html.tostring(body.cssselect("span.owner_info")[0], encoding=charset, method="text")
     returnee["name"] = info.split()[0]
-    returnee["date"] = DATE.parse(info.split()[1])
+    date = html.tostring(body.cssselect("span.owner_info span.datetime")[0], encoding=charset, method="text")
+    returnee["date"] = DATE.parse(date)
 
     article = body.cssselect("div.area_content")[0]
-    returnee["content"] = st.strip_html(html.tostring(article, encoding=charset, method="html"))
+    returnee["content"] = st.strip_html(html.tostring(article, encoding="utf8", method="html"))
     returnee["images"] = get_images(article)
     returnee["post_id"] = url[url.rfind("/")+1:]
 

@@ -8,7 +8,7 @@ import time
 
 
 def main():
-    print get_article("http://kaengphan.egloos.com/m/11007241")
+    print get_article_list("http://kaengphan.egloos.com")
 
 
 def get_article(url, mode=None):
@@ -35,10 +35,13 @@ def get_article(url, mode=None):
 
     info = html.tostring(body.cssselect("span.name")[0], encoding=charset, method="text");
     returnee["name"] = info.split()[0]
-    returnee["date"] = info.split()[1] + " " + info.split()[2]
-
+    if len(info) > 2:
+        returnee["date"] = info.split()[1] + " " + info.split()[2]
+    else:
+        import datetime
+        returnee["date"] = datetime.datetime.now()
     article = tree.cssselect("div#post_contents")[0]
-    returnee["content"] = st.strip_html(html.tostring(article, encoding=charset, method="html"))
+    returnee["content"] = st.strip_html(html.tostring(article, encoding="utf8", method="html"))
     returnee["images"] = get_images(article)
     returnee["post_id"] = url[url.rfind("/")+1:]
 
@@ -57,44 +60,30 @@ def get_images(article):
 
 def get_article_list(host, lp=None):
     returnee = []
-    re = requests.get(host + "/archives")
+    re = requests.get(host + "/m/archives", timeout=5.0)
     tree = html.fromstring(re.text)
-    during = tree.cssselect("ul.f_clear")[0].cssselect("li")
+    year_list = tree.cssselect("ul.prev_list")[0].cssselect("li")
 
-    for month in during:
-        flag, page = 1, 1
+    for year in year_list:
+        year_url = year.get("onclick")
+        year_url = year_url.replace("location.href=", "").replace("'", "");
 
-        while flag:
-            req = requests.get(host + "/m" + month.cssselect("a")[0].get("href") + ("/page/%d" % page))
-            body = html.fromstring(req.text)
+        year_re = requests.get(host + year_url, timeout=5.0)
+        year_tree = html.fromstring(year_re.text)
 
-            articles = body.cssselect("ul.category")[0].cssselect("li")
-            sw = len(articles)
+        month_list = year_tree.cssselect("ul.prev_list")[0].cssselect("li")
 
-            for article in articles:
-                url = host + article.cssselect("a")[0].get("href")
-                a_date = article.cssselect("span.post_info")[0].text
-                if not "/" in a_date:
-                    current = NOW.today()
-                    date = DATE.parse(("%d/%d/%d" % (current.year, current.month, current.day)))
+        for month in month_list:
+            month_url = month.get("onclick")
+            month_url = month_url.replace("location.href=", "").replace("'", "");
 
-                else:
-                    date = DATE.parse(a_date)
+            month_re = requests.get(host + month_url, timeout=5.0)
+            month_tree = html.fromstring(month_re.text)
 
-                if lp and (date - DATE.parse(lp)).days < 0:
-                    flag = 0
-                    break
-
-                else:
-                    returnee.append(url)
-
-            if sw == 10 and flag == 1:
-                page += 1
-            elif sw < 10 or flag == 0:
-                break
-
-        if flag == 0:
-            break
+            post_list = month_tree.cssselect("ul.category")[0].cssselect("li")
+            for post in post_list:
+                post_url = post.cssselect("a")[0].get("href")
+                returnee.append(host + post_url)
 
     return returnee
 

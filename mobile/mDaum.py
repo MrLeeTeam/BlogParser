@@ -38,9 +38,12 @@ def get_article(url, mode=None):
     returnee["date"] = DATE.parse(body.cssselect("span.date")[0].text.strip())
 
     article = body.cssselect("div#article")[0]
-    returnee["content"] = st.strip_html(html.tostring(article, encoding=charset, method="html")).replace("\t", "")
+    returnee["content"] = st.strip_html(html.tostring(article, encoding="utf8", method="html")).replace("\t", "")
     returnee["images"] = get_images(article)
-    returnee["post_id"] = url[url.rfind("/") + 1:]
+    post_id = url[url.rfind("/") + 1:]
+    post_id = post_id[post_id.find("articleno=") + 10:]
+    post_id = post_id[:post_id.find("&")];
+    returnee["post_id"] = post_id
     return returnee
 
 
@@ -55,6 +58,9 @@ def get_images(article):
 
 def get_article_list(host, lp=None):
     returnee = []
+    if host.find("http://m.") == -1:
+        host = host.replace("http://", "http://m.")
+
     prefix = "http://m.blog.daum.net"
 
     current_page, flag, tmp = 1, 1, 1
