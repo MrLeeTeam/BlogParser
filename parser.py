@@ -33,7 +33,7 @@ def main():
             print "SUCCEED value false"
             return
 
-        print "["+datetime.datetime.now(), "] : ", host,
+        print "[",datetime.datetime.now(), "] : ", host,
 
         article_list = get_article_list(host, realm, last_post)
         print " [",len(article_list),"]"
