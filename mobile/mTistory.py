@@ -23,7 +23,7 @@ def get_article(url, mode=None):
         Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us)\
         AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/1A542a Safari/419.3
         """
-        structure = requests.get(url, headers={"User-Agent": agent})
+        structure = requests.get(url, headers={"User-Agent": agent}, timeout=5.0)
 
     else:
         structure = mode
@@ -62,7 +62,7 @@ def get_article_list(host, lp=None):
     returnee = []
     while flag:
         obj = host + "/m/post/list/page/%d" % page
-        re = requests.get(obj)
+        re = requests.get(obj, timeout=5.0)
         tree = html.fromstring(re.text)
 
         articles = tree.cssselect("ul#articleList")[0].cssselect("li")
