@@ -23,7 +23,7 @@ def get_article(url, mode=None):
     returnee = {}
 
     if not mode:
-        structure = requests.get(url, headers={"User-Agent": UserAgent})
+        structure = requests.get(url, headers={"User-Agent": UserAgent}, timeout=5.0)
 
     else:
         structure = mode
@@ -67,7 +67,7 @@ def get_article_list(host, lp=None):
     next_page = host
 
     while flag:
-        re = requests.get(next_page, headers={"User-Agent": UserAgent})
+        re = requests.get(next_page, headers={"User-Agent": UserAgent}, timeout=5.0)
         tree = html.fromstring(re.text)
         tmp = current_page
 

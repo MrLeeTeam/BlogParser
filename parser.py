@@ -5,7 +5,7 @@ import sys
 import requests
 import database
 import datetime
-
+import signal
 # -*- Constant -*-
 UserAgent = """
             Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) \
@@ -14,6 +14,13 @@ UserAgent = """
 
 crawler_id = 0
 
+
+isKilled = False
+
+
+def kill(signum, frame):
+    global isKilled
+    isKilled = True
 
 def init():
     global crawler_id
@@ -27,6 +34,9 @@ def init():
 
 def main():
     while True:
+        if isKilled:
+            break
+
         b_id, host, realm, last_crawl, last_post, succeed = database.get_meta()
 
         if not succeed:
