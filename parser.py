@@ -38,23 +38,25 @@ def main():
         if isKilled:
             break
 
-        b_id, host, realm, last_crawl, last_post, succeed = database.get_meta()
+        try:
+            b_id, host, realm, last_crawl, last_post, succeed = database.get_meta()
 
-        if not succeed:
-            print "SUCCEED value false"
-            return
+            if not succeed:
+                print "SUCCEED value false"
+                return
 
-        print "[",datetime.datetime.now(), "] : ", host,
+            print "[",datetime.datetime.now(), "] : ", host,
 
-        article_list = get_article_list(host, realm, last_post)
-        print " [",len(article_list),"]"
-        for article in article_list:  # parse article and save to database
-            data = get_article(article, realm)
-            if len(data) == 0 : continue
-            database.save_article(b_id, data)
+            article_list = get_article_list(host, realm, last_post)
+            print " [",len(article_list),"]"
+            for article in article_list:  # parse article and save to database
+                data = get_article(article, realm)
+                if len(data) == 0 : continue
+                database.save_article(b_id, data)
 
-        database.flag(b_id, 0)  # Unset flag
-
+            database.flag(b_id, 0)  # Unset flag
+        except requests.Timeout, e:
+            print e.message
 
 
 
