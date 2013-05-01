@@ -60,7 +60,7 @@ def get_meta():  # Set Flag, Get Host, Get Realm, Get Date
 
     try:
         cursor = con.cursor()
-        cursor.execute("select b_id, url, realm, last_crawl, last_post from blog_meta where last_crawl is null and (crawler_id is null or crawler_id = 0) and realm in ( 'Daum')   limit 1")
+        cursor.execute("select b_id, url, realm, last_crawl, last_post from blog_meta where last_crawl is null and (crawler_id is null or crawler_id = 0)  limit 1")
 
         record = cursor.fetchone()
         if record:
