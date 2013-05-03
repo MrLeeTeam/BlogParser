@@ -13,14 +13,13 @@ UserAgent = """
             """
 
 crawler_id = 0
-
-
 isKilled = False
 
 
 def kill(signum, frame):
     global isKilled
     isKilled = True
+
 
 def init():
     global crawler_id
@@ -55,9 +54,8 @@ def main():
                 database.save_article(b_id, data)
 
             database.flag(b_id, 0)  # Unset flag
-        except requests.Timeout, e:
+        except Exception, e:
             print e.message
-
 
 
 def get_article_list(host, realm=None, lp=None):
