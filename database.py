@@ -8,7 +8,7 @@ crawler_id = None
 def init(cr_id):
     global con
     global crawler_id
-    con = psycopg2.connect(host="61.43.139.115", database="mrlee", user="mrlee", password="altmxjfl")
+    con = psycopg2.connect(host="58.229.105.83", database="mrlee", user="mrlee", password="altmxjfl")
     crawler_id = cr_id
 
 def save_article(b_id, data):
@@ -60,7 +60,7 @@ def get_meta():  # Set Flag, Get Host, Get Realm, Get Date
 
     try:
         cursor = con.cursor()
-        cursor.execute("select b_id, url, realm, last_crawl, last_post from blog_meta where last_crawl is null and (crawler_id is null or crawler_id = 0)  limit 1")
+        cursor.execute("select b_id, url, realm, last_crawl, last_post from blog_meta where last_crawl is null and (crawler_id is null or crawler_id = 0) limit 1")
 
         record = cursor.fetchone()
         if record:

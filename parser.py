@@ -1,10 +1,11 @@
 __author__ = 'jaeyoung'
 
 from mobile import mTistory, mDaum, mEgloos, mNaver
+from core import logger
+
 import sys
 import requests
 import database
-import datetime
 import signal
 # -*- Constant -*-
 UserAgent = """
@@ -41,25 +42,24 @@ def main():
             b_id, host, realm, last_crawl, last_post, succeed = database.get_meta()
 
             if not succeed:
-                print "SUCCEED value false"
+                logger.log("Getting blog entity is failed")
                 return
 
-            print "[",datetime.datetime.now(), "] : ", host,
-
             article_list = get_article_list(host, realm, last_post)
-            print " [",len(article_list),"]"
-            for article in article_list:  # parse article and save to database
+            logger.log(host, " [", len(article_list), "]")
+
+            for article in article_list:
                 data = get_article(article, realm)
                 if len(data) == 0 : continue
                 database.save_article(b_id, data)
-
-            database.flag(b_id, 0)  # Unset flag
+            database.flag(b_id, 0)
         except Exception, e:
             print e.message
 
 
+
 def get_article_list(host, realm=None, lp=None):
-    if host.find("http://") == -1:
+    if "http://" not in host:
         host = "http://" + host
     re = requests.get(host, headers={"User-agent": UserAgent}, timeout=5.0)
 
@@ -84,7 +84,7 @@ def get_article_list(host, realm=None, lp=None):
 
 
 def get_article(url, realm=None):
-    if url.find("http://") == -1:
+    if "http://" not in url:
         url = "http://" + url
 
     re = requests.get(url, headers={"User-agent": UserAgent}, timeout=5.0)

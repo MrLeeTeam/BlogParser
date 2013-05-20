@@ -11,7 +11,7 @@ import requests
 
 
 def main():
-    print get_article("http://lovegadget.tistory.com/1383")
+    print get_article("http://skylooker.tistory.com/m/5")['content']
 
 
 def get_article(url, mode=None):
@@ -40,7 +40,9 @@ def get_article(url, mode=None):
     returnee["date"] = DATE.parse(date)
 
     article = body.cssselect("div.area_content")[0]
-    returnee["content"] = st.strip_html(html.tostring(article, encoding="utf8", method="html"))
+    returnee["content"] = st.strip_html(html.tostring(article, encoding=charset, method="html").decode("utf8"))
+
+
     returnee["images"] = get_images(article)
     returnee["post_id"] = url[url.rfind("/")+1:]
 
@@ -86,7 +88,4 @@ def get_article_list(host, lp=None):
 
 
 if __name__ == "__main__":
-    # main()
-    # articles = get_article_list("http://imuky.tistory.com")
-    articles = get_article_list("http://ansanstory.com", "2012/03/17 15:20")
-    print articles
+    main()
