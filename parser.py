@@ -45,16 +45,30 @@ def main():
                 logger.log("Getting blog entity is failed")
                 return
 
-            article_list = get_article_list(host, realm, last_post)
+            try:
+                article_list = get_article_list(host, realm, last_post)
+            except Exception, e:
+                print e.message
+                database.flag_rollback(b_id)
+                continue
+
             logger.log(host, " [", len(article_list), "]")
 
             for article in article_list:
-                data = get_article(article, realm)
+
+                try:
+                    data = get_article(article, realm)
+                except Exception, e:
+                    print e.message
+                    continue
+
                 if len(data) == 0 : continue
                 database.save_article(b_id, data)
             database.flag(b_id, 0)
+
         except Exception, e:
             print e.message
+            database.flag_rollback(b_id)
 
 
 
