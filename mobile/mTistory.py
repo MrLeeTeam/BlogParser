@@ -8,10 +8,10 @@ from dateutil import parser as DATE
 import requests
 
 
-
+import re
 
 def main():
-    print get_article("http://skylooker.tistory.com/m/5")['content']
+    print get_article("http://starter123.tistory.com/m/76")['content']
 
 
 def get_article(url, mode=None):
@@ -19,10 +19,7 @@ def get_article(url, mode=None):
     returnee = {}
 
     if not mode:
-        agent = """
-        Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us)\
-        AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/1A542a Safari/419.3
-        """
+        agent = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/1A542a Safari/419.3"
         structure = requests.get(url, headers={"User-Agent": agent}, timeout=5.0)
 
     else:
@@ -40,14 +37,13 @@ def get_article(url, mode=None):
     returnee["date"] = DATE.parse(date)
 
     article = body.cssselect("div.area_content")[0]
-    returnee["content"] = st.strip_html(html.tostring(article, encoding=charset, method="html").decode("utf8"))
 
+    returnee["content"] = st.strip_html(html.tostring(article, encoding=charset, method="text")).decode("utf-8", "ignore").encode("utf8")
 
     returnee["images"] = get_images(article)
     returnee["post_id"] = url[url.rfind("/")+1:]
 
     return returnee
-
 
 def get_images(article):
     urls = []
@@ -64,7 +60,10 @@ def get_article_list(host, lp=None):
     returnee = []
     while flag:
         obj = host + "/m/post/list/page/%d" % page
-        re = requests.get(obj, timeout=5.0)
+        try:
+            re = requests.get(obj, timeout=5.0)
+        except Exception:
+            continue
         tree = html.fromstring(re.text)
 
         articles = tree.cssselect("ul#articleList")[0].cssselect("li")

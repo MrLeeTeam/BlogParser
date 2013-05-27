@@ -60,6 +60,7 @@ def get_images(article):
 
 def get_article_list(host, lp=None):
     returnee = []
+
     re = requests.get(host + "/m/archives", timeout=5.0)
     tree = html.fromstring(re.text)
     year_list = tree.cssselect("ul.prev_list")[0].cssselect("li")

@@ -89,8 +89,9 @@ def get_article_list(host, realm=None, lp=None):
 
         elif realm == "Egloos" or "egloos.com" in re.text:
             article_list = mEgloos.get_article_list(host, lp)
-    except IndexError:
-        pass
+    except IndexError, e:
+        print e.message
+
     return article_list
 
 

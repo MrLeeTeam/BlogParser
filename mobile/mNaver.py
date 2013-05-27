@@ -62,7 +62,7 @@ def get_article_list(host, lp=None):
             req = requests.get(obj, timeout=5.0)
         except:
             print "time out"
-            continue;
+            continue
         curPage = re.search("currentPage : ([0-9]+),", req.text)
 
         if curPage is not None and int(curPage.group(1)) == page:
