@@ -15,6 +15,7 @@ def init(cr_id):
 
 def save_article(b_id, data):
     global con
+    result = False
     try:
 
         cursor = con.cursor()
@@ -24,6 +25,7 @@ def save_article(b_id, data):
         if cursor.fetchone() is None:
             cursor.execute("INSERT INTO blog_data(b_id, post_id, author, title, crawl_date, post_date, contents) values(%s, %s, %s, %s, %s, %s, %s)", [b_id, data["post_id"], data["name"], data["title"], datetime.datetime.now(), data["date"], data["content"]])
             con.commit()
+            result = True
 
             image_list = [[b_id, data["post_id"], url, datetime.datetime.now()] for url in data["images"]]
             for image in image_list:
@@ -33,6 +35,7 @@ def save_article(b_id, data):
     except Exception, e:
         print "## save error : %s " % e.message
         con.rollback()
+    return result
 
 
 def flag_rollback(b_id):

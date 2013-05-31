@@ -50,7 +50,7 @@ def main():
                 continue
 
             logger.log(host, " [", len(article_list), "]")
-
+            success_count = 0
             for article in article_list:
 
                 try:
@@ -59,12 +59,17 @@ def main():
                     print e.message
                     continue
 
-                if len(data) == 0 : continue
-                database.save_article(b_id, data)
+                if len(data) == 0:
+                    continue
+                if database.save_article(b_id, data):
+                    success_count += 1
+
+            logger.log( success_count, "accepted")
             database.flag(b_id, 0)
 
         except Exception, e:
             print e.message
+            logger.log(b_id, " - rollback")
             database.flag_rollback(b_id)
 
 
@@ -90,7 +95,7 @@ def get_article_list(host, realm=None, lp=None):
         elif realm == "Egloos" or "egloos.com" in re.text:
             article_list = mEgloos.get_article_list(host, lp)
     except IndexError, e:
-        print e.message
+        logger.log("get article_list failed", e.message)
 
     return article_list
 
@@ -116,8 +121,8 @@ def get_article(url, realm=None):
 
         elif realm == "Egloos" or "egloos.com" in re.text:
             data = mEgloos.get_article(url, re)
-    except IndexError:
-        pass
+    except IndexError, e:
+        logger.log("get article failed - ", e.message)
 
     return data
 
