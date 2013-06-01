@@ -8,7 +8,7 @@ from dateutil import parser as DATE
 
 
 def main():
-    print get_article("http://m.blog.naver.com/rlatjdwlscjs/30153205598")
+    print get_article("http://m.blog.naver.com/cik0131/150169028112")
 
 
 def get_article(url, mode=None):
@@ -39,7 +39,10 @@ def get_article(url, mode=None):
         pass
     returnee["date"] = date
 
-    article = body.cssselect("div.post_tx div")[0]
+    try:
+        article = body.cssselect("div.post_tx div")[0]
+    except:
+        article = body.cssselect("div.post_tx p")[0]
     returnee["content"] = st.strip_html(html.tostring(article, encoding="utf8", method="html"))
     returnee["images"] = get_images(article)
     returnee["post_id"] = url[url.rfind("/")+1:]
