@@ -56,7 +56,7 @@ def main():
                 try:
                     data = get_article(article, realm)
                 except Exception, e:
-                    print e.message
+                    print e.message, article
                     continue
 
                 if len(data) == 0:
@@ -96,6 +96,7 @@ def get_article_list(host, realm=None, lp=None):
             article_list = mEgloos.get_article_list(host, lp)
     except IndexError, e:
         logger.log("get article_list failed", e.message)
+        raise IndexError(e.message)
 
     return article_list
 
