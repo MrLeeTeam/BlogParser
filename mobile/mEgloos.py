@@ -1,14 +1,18 @@
 from lxml import html
+from lxml.html.clean import Cleaner
+
 from striper import strip_html as st
 from dateutil import parser as DATE
 from datetime import date as NOW
 
 import requests
 import time
+import datetime
 
 
 def main():
-    print get_article_list("http://kaengphan.egloos.com")
+    #print get_article_list("http://kaengphan.egloos.com")
+    print get_article("http://kaengphan.egloos.com/m/11024115")["content"]
 
 
 def get_article(url, mode=None):
@@ -29,19 +33,33 @@ def get_article(url, mode=None):
     charset = structure.encoding
 
     tree = html.fromstring(structure.text)
-    body = tree.cssselect("div.subject")[0]
 
-    returnee["title"] = html.tostring(body.cssselect("h3")[0], encoding=charset, method="text").strip()
+    header = tree.cssselect("div.subject")[0]
 
-    info = html.tostring(body.cssselect("span.name")[0], encoding=charset, method="text");
-    returnee["name"] = info.split()[0]
-    if len(info) > 2:
-        returnee["date"] = info.split()[1] + " " + info.split()[2]
-    else:
-        import datetime
-        returnee["date"] = datetime.datetime.now()
+    returnee["title"] = st.refine_text(html.tostring(header.cssselect("h3")[0]), encoding=charset)
+
+    name_date = st.refine_text(html.tostring(header.cssselect("span.name")[0]), encoding=charset)
+
+    name_date = name_date.split()
+    returnee["name"] = name_date[0]
+    date = " ".join(name_date[1:])
+
+
+    returnee["date"] = datetime.datetime.now()
+    try:
+        returnee["date"] = DATE.parse(date)
+    except Exception, e:
+        print e.message
+
     article = tree.cssselect("div#post_contents")[0]
-    returnee["content"] = st.strip_html(html.tostring(article, encoding="utf8", method="html"))
+
+    tags = article.cssselect("div.btn_fontsize")
+    for tag in tags:
+        article.remove(tag)
+
+    cleaner = Cleaner(comments=True)
+
+    returnee["content"] = st.refine_text(html.tostring(cleaner.clean_html(article)), encoding=charset)
     returnee["images"] = get_images(article)
     returnee["post_id"] = url[url.rfind("/")+1:]
 

@@ -8,7 +8,18 @@ from dateutil import parser as DATE
 
 
 def main():
-    print get_article("http://m.blog.naver.com/cik0131/150169028112")
+    try:
+        #a= get_article("http://m.blog.naver.com/zeminica7/80009913680")
+        a= get_article("http://m.blog.naver.com/cyber3208/60163282137")
+        print a["content"]
+    except Exception, e:
+        print "error", e.message
+    #list = get_article_list("http://m.blog.naver.com/zeminica7", None)
+    #for p in list:
+     #   try:
+      #      print get_article(p)
+       # except:
+        #    print p
 
 
 def get_article(url, mode=None):
@@ -29,21 +40,25 @@ def get_article(url, mode=None):
     tree = html.fromstring(structure.text)
     body = tree.cssselect("div#ct")[0]
 
-    returnee["title"] = html.tostring(body.cssselect("div.end_tt h2")[0], encoding=charset, method="text")
+    title = body.cssselect("div.end_tt h2")[0]
+    title.remove(title.cssselect("a")[0])
 
-    returnee["name"] = html.tostring(body.cssselect("div.end_tt p span a ")[0], encoding=charset, method="text")
+    returnee["title"] = st.refine_text(html.tostring(title), encoding=charset)
+
+    returnee["name"] = st.refine_text(html.tostring(body.cssselect("div.end_tt p span a")[0]), encoding=charset)
+
     date = datetime.datetime.now()
     try:
-        date = DATE.parse(html.tostring(body.cssselect("div.end_tt p span.s_tm")[0], encoding=charset, method="text"))
-    except:
+        date = DATE.parse(st.refine_text(html.tostring(body.cssselect("div.end_tt p span.s_tm")[0]), encoding=charset))
+    except Exception, e:
         pass
     returnee["date"] = date
 
-    try:
-        article = body.cssselect("div.post_tx div")[0]
-    except:
-        article = body.cssselect("div.post_tx p")[0]
-    returnee["content"] = st.strip_html(html.tostring(article, encoding="utf8", method="html"))
+    article = body.cssselect("div.post_tx")[0]
+    article.remove(article.cssselect("span.ut_txt")[0])
+
+    returnee["content"] = st.refine_text(html.tostring(article), encoding=charset)
+
     returnee["images"] = get_images(article)
     returnee["post_id"] = url[url.rfind("/")+1:]
 

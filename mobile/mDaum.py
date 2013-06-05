@@ -15,7 +15,8 @@ UserAgent = """
 
 
 def main():
-    print get_article("http://blog.daum.net/phjsunflower/1100")
+    #print get_article("http://m.blog.daum.net/phjsunflower/1100")["content"]
+    print get_article("http://m.blog.daum.net/mpcil/242")["content"]
 
 
 def get_article(url, mode=None):
@@ -33,16 +34,34 @@ def get_article(url, mode=None):
     tree = html.fromstring(structure.text)
     body = tree.cssselect("div#daumContent")[0]
 
-    returnee["title"] = body.cssselect("p.title")[0].text.strip()
-    returnee["name"] = body.cssselect("span.nick")[0].text.strip()
-    returnee["date"] = DATE.parse(body.cssselect("span.date")[0].text.strip())
+    #print dir(body)
+
+    returnee["title"] = st.refine_text(html.tostring(body.cssselect("p.title")[0]), encoding=charset)
+    returnee["name"] = st.refine_text(html.tostring(body.cssselect("span.nick")[0]), encoding=charset)
+    returnee["date"] = DATE.parse(st.refine_text(html.tostring(body.cssselect("span.date")[0]), encoding=charset))
 
     article = body.cssselect("div#article")[0]
-    returnee["content"] = st.strip_html(html.tostring(article, encoding="utf8", method="html")).replace("\t", "")
+
+    article.remove(article.cssselect("div.articleNavi")[0])
+    article.remove(article.cssselect("div.articleNavi")[0])
+    article.remove(article.cssselect("div.relation_article")[0])
+
+    returnee["content"] = st.refine_text(html.tostring(article))
+
     returnee["images"] = get_images(article)
+
+
     post_id = url[url.rfind("/") + 1:]
     post_id = post_id[post_id.find("articleno=") + 10:]
     post_id = post_id[:post_id.find("&")];
+
+    if post_id == '' :
+        str = "<meta property=\"og:url\" content=\""
+        part = structure.text[structure.text.find(str) + len(str):]
+        part = part[:part.find("\"")]
+        post_id = part[part.rfind("/") + 1:]
+        post_id.encode(charset)
+
     returnee["post_id"] = post_id
     return returnee
 

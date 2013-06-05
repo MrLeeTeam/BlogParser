@@ -30,15 +30,28 @@ def get_article(url, mode=None):
     tree = html.fromstring(structure.text)
     body = tree.cssselect("div.wrap_posting")[0]
 
-    returnee["title"] = html.tostring(body.cssselect("div.area_tit h2 a")[0], encoding=charset, method="text")
-    info = html.tostring(body.cssselect("span.owner_info")[0], encoding=charset, method="text")
-    returnee["name"] = info.split()[0]
-    date = html.tostring(body.cssselect("span.owner_info span.datetime")[0], encoding=charset, method="text")
-    returnee["date"] = DATE.parse(date)
+    returnee["title"] = st.refine_text(html.tostring(body.cssselect("div.area_tit h2 a")[0]), encoding=charset)
+    owner_info = body.cssselect("span.owner_info")[0]
+    date = owner_info.cssselect("span.datetime")[0]
+
+    owner_info.remove(date)
+    owner_info.remove(owner_info.cssselect("span.txt_bar")[0])
+    owner_info.remove(owner_info.cssselect("span.category_info")[0])
+
+    name = owner_info
+
+    returnee["name"] = st.refine_text(html.tostring(name), encoding=charset)
+    returnee["date"] = DATE.parse(st.refine_text(html.tostring(date), encoding=charset))
 
     article = body.cssselect("div.area_content")[0]
 
-    returnee["content"] = st.strip_html(html.tostring(article, encoding=charset, method="text")).decode("utf-8", "ignore").encode("utf8")
+    scripts = article.cssselect("script")
+    for script in scripts:
+        script.getparent().remove(script)
+
+    article.remove(article.cssselect("div.section_writing")[0])
+
+    returnee["content"] = st.refine_text(html.tostring(article), encoding=charset).decode("utf-8", "ignore").encode("utf8")
 
     returnee["images"] = get_images(article)
     returnee["post_id"] = url[url.rfind("/")+1:]
