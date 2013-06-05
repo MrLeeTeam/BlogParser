@@ -45,7 +45,7 @@ def main():
             try:
                 article_list = get_article_list(host, realm, last_post)
             except Exception, e:
-                print e.message
+                logger.log(e.message, host)
                 database.flag_rollback(b_id)
                 continue
 
@@ -56,7 +56,7 @@ def main():
                 try:
                     data = get_article(article, realm)
                 except Exception, e:
-                    print e.message, article
+                    logger.log(e.message, article)
                     continue
 
                 if len(data) == 0:
@@ -64,12 +64,11 @@ def main():
                 if database.save_article(b_id, data):
                     success_count += 1
 
-            logger.log( success_count, "accepted")
+            logger.log(success_count, "accepted")
             database.flag(b_id, 0)
 
         except Exception, e:
-            print e.message
-            logger.log(b_id, " - rollback")
+            logger.log(b_id, "global error:", e.message)
             database.flag_rollback(b_id)
 
 
