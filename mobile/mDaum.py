@@ -7,17 +7,17 @@ from dateutil import parser as DATE
 
 import requests
 
+UserAgent = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/1A542a Safari/419.3"
 
-UserAgent = """
-        Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us)\
-        AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/1A542a Safari/419.3
-        """
 
 
 def main():
     #print get_article("http://m.blog.daum.net/phjsunflower/1100")["content"]
-    print get_article("http://m.blog.daum.net/mpcil/242")["content"]
-
+    a = get_article("http://m.blog.daum.net/mpcil/242")
+    #print a["content"]
+    a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=0AjZA&articleno=17320065&maxNo=17320066&minNo=17320057&maxDt=20090724210224&minDt=20090724185428&maxListNo=17320076&minListNo=17320067&maxListDt=20090729170337&minListDt=20090724210551&currentPage=17&beforePage=16&categoryId=")
+    a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=0591M&articleno=5356240&maxNo=13645718&minNo=5356240&maxDt=20080123155844&minDt=20051202160624&maxListNo=15738371&minListNo=15579000&maxListDt=20110107101928&minListDt=20080925175056&currentPage=6&beforePage=5&categoryId=")
+    print a["content"]
 
 def get_article(url, mode=None):
 
@@ -42,9 +42,13 @@ def get_article(url, mode=None):
 
     article = body.cssselect("div#article")[0]
 
-    article.remove(article.cssselect("div.articleNavi")[0])
-    article.remove(article.cssselect("div.articleNavi")[0])
-    article.remove(article.cssselect("div.relation_article")[0])
+    navis = article.cssselect("div.articleNavi")
+    for navi in navis:
+        navi.getparent().remove(navi)
+
+    rel_article = article.cssselect("div.relation_article")[0]
+    rel_article.getparent().remove(rel_article)
+
 
     returnee["content"] = st.refine_text(html.tostring(article))
 
