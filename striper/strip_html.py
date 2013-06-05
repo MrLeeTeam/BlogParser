@@ -8,7 +8,7 @@ def strip_html(html):
     data = re.sub("<script[\w\W\s]*?</script>", "", html)
     data = re.sub("<style[\w\W\s]*?</style>", "", data)
     data = re.sub("<br[ /]?>", "\n", data)
-    data = re.sub("<p>", "\n", data)
+    data = re.sub("<p( [^>]*>|>)", "\n", data)
     p = re.compile(r'<.*?>')
     data = p.sub('', data)
 
