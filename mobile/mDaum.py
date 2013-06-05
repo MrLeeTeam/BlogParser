@@ -17,6 +17,7 @@ def main():
     #print a["content"]
     a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=0AjZA&articleno=17320065&maxNo=17320066&minNo=17320057&maxDt=20090724210224&minDt=20090724185428&maxListNo=17320076&minListNo=17320067&maxListDt=20090729170337&minListDt=20090724210551&currentPage=17&beforePage=16&categoryId=")
     a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=0591M&articleno=5356240&maxNo=13645718&minNo=5356240&maxDt=20080123155844&minDt=20051202160624&maxListNo=15738371&minListNo=15579000&maxListDt=20110107101928&minListDt=20080925175056&currentPage=6&beforePage=5&categoryId=")
+    a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=06YrG&articleno=13740502&maxNo=13740504&minNo=13740495&maxDt=20110105210824&minDt=20101014201958&maxListNo=13740518&minListNo=13740505&maxListDt=20110606160706&minListDt=20110202091009&currentPage=4&beforePage=3&categoryId=")
     print a["content"]
 
 def get_article(url, mode=None):
@@ -46,8 +47,9 @@ def get_article(url, mode=None):
     for navi in navis:
         navi.getparent().remove(navi)
 
-    rel_article = article.cssselect("div.relation_article")[0]
-    rel_article.getparent().remove(rel_article)
+    rel_articles = article.cssselect("div.relation_article")
+    for rel_article in rel_articles:
+        rel_article.getparent().remove(rel_article)
 
 
     returnee["content"] = st.refine_text(html.tostring(article))
