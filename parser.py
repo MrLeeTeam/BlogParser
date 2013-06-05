@@ -45,7 +45,7 @@ def main():
             try:
                 article_list = get_article_list(host, realm, last_post)
             except Exception, e:
-                logger.log(e.message, host)
+                logger.log("##ERROR:get_list", host, e.message)
                 database.flag_rollback(b_id)
                 continue
 
@@ -56,7 +56,7 @@ def main():
                 try:
                     data = get_article(article, realm)
                 except Exception, e:
-                    logger.log(e.message, article)
+                    logger.log("##ERROR:get_article", article, e.message)
                     continue
 
                 if len(data) == 0:
@@ -68,7 +68,7 @@ def main():
             database.flag(b_id, 0)
 
         except Exception, e:
-            logger.log(b_id, "global error:", e.message)
+            logger.log("##ERROR:global_error:", b_id, e.message)
             database.flag_rollback(b_id)
 
 
@@ -81,21 +81,19 @@ def get_article_list(host, realm=None, lp=None):
     article_list = []
     if re.status_code == 404:
         return article_list
-    try:
-        if realm == "Tistory" or "tistory.com" in host:
-            article_list = mTistory.get_article_list(host, lp)
-        #
-        elif realm == "Daum" or "blog.daum.net" in host:
-            article_list = mDaum.get_article_list(host, lp)
 
-        elif realm == "Naver" or "naver.com" in host:
-            article_list = mNaver.get_article_list(host, lp)
+    if realm == "Tistory" or "tistory.com" in host:
+        article_list = mTistory.get_article_list(host, lp)
+    #
+    elif realm == "Daum" or "blog.daum.net" in host:
+        article_list = mDaum.get_article_list(host, lp)
 
-        elif realm == "Egloos" or "egloos.com" in host:
-            article_list = mEgloos.get_article_list(host, lp)
-    except IndexError, e:
-        logger.log("get article_list failed", e.message)
-        raise IndexError(e.message)
+    elif realm == "Naver" or "naver.com" in host:
+        article_list = mNaver.get_article_list(host, lp)
+
+    elif realm == "Egloos" or "egloos.com" in host:
+        article_list = mEgloos.get_article_list(host, lp)
+
 
     return article_list
 
@@ -109,20 +107,18 @@ def get_article(url, realm=None):
 
     if re.status_code == 404:
         return data
-    try:
-        if realm == "Tistory" or "tistory.com" in url:
-            data = mTistory.get_article(url, re)
 
-        elif realm == "Daum" or "blog.daum.net" in url:
-            data = mDaum.get_article(url, re)
+    if realm == "Tistory" or "tistory.com" in url:
+        data = mTistory.get_article(url, re)
 
-        elif realm == "Naver" or "naver.com" in url:
-            data = mNaver.get_article(url, re)
+    elif realm == "Daum" or "blog.daum.net" in url:
+        data = mDaum.get_article(url, re)
 
-        elif realm == "Egloos" or "egloos.com" in url:
-            data = mEgloos.get_article(url, re)
-    except IndexError, e:
-        logger.log("get article failed - ", e.message)
+    elif realm == "Naver" or "naver.com" in url:
+        data = mNaver.get_article(url, re)
+
+    elif realm == "Egloos" or "egloos.com" in url:
+        data = mEgloos.get_article(url, re)
 
     return data
 
