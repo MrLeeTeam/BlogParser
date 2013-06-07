@@ -13,12 +13,19 @@ UserAgent = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) App
 
 def main():
     #print get_article("http://m.blog.daum.net/phjsunflower/1100")["content"]
-    a = get_article("http://m.blog.daum.net/mpcil/242")
+    #a = get_article("http://m.blog.daum.net/mpcil/242")
     #print a["content"]
-    a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=0AjZA&articleno=17320065&maxNo=17320066&minNo=17320057&maxDt=20090724210224&minDt=20090724185428&maxListNo=17320076&minListNo=17320067&maxListDt=20090729170337&minListDt=20090724210551&currentPage=17&beforePage=16&categoryId=")
-    a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=0591M&articleno=5356240&maxNo=13645718&minNo=5356240&maxDt=20080123155844&minDt=20051202160624&maxListNo=15738371&minListNo=15579000&maxListDt=20110107101928&minListDt=20080925175056&currentPage=6&beforePage=5&categoryId=")
-    a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=06YrG&articleno=13740502&maxNo=13740504&minNo=13740495&maxDt=20110105210824&minDt=20101014201958&maxListNo=13740518&minListNo=13740505&maxListDt=20110606160706&minListDt=20110202091009&currentPage=4&beforePage=3&categoryId=")
-    print a["content"]
+    #a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=0AjZA&articleno=17320065&maxNo=17320066&minNo=17320057&maxDt=20090724210224&minDt=20090724185428&maxListNo=17320076&minListNo=17320067&maxListDt=20090729170337&minListDt=20090724210551&currentPage=17&beforePage=16&categoryId=")
+    #a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=0591M&articleno=5356240&maxNo=13645718&minNo=5356240&maxDt=20080123155844&minDt=20051202160624&maxListNo=15738371&minListNo=15579000&maxListDt=20110107101928&minListDt=20080925175056&currentPage=6&beforePage=5&categoryId=")
+    #a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=06YrG&articleno=13740502&maxNo=13740504&minNo=13740495&maxDt=20110105210824&minDt=20101014201958&maxListNo=13740518&minListNo=13740505&maxListDt=20110606160706&minListDt=20110202091009&currentPage=4&beforePage=3&categoryId=")
+    #print a["content"]
+
+
+    #b = get_article_list("http://blog.daum.net/eyey-")
+    #b = get_article_list("http://blog.daum.net/zellkur")
+    b = get_article_list("http://blog.daum.net/harimao22")
+
+    print len(b)
 
 def get_article(url, mode=None):
 
@@ -107,16 +114,18 @@ def get_article_list(host, lp=None):
         if tmp == current_page:
             flag = 0
 
-        articles = tree.cssselect("div.list_by_user")[0].cssselect("li")  # get article_list
-        for article in articles:
-            url = prefix + article.cssselect("a")[0].get("href")
-            date = article.cssselect("span.date")[0].text
-            if lp and (DATE.parse(date) - DATE.parse(lp)).days < 0:
-                flag = 0
-                break
+        users = tree.cssselect("div.list_by_user")
+        for user in users:
+            articles = user.cssselect("li")  # get article_list
+            for article in articles:
+                url = prefix + article.cssselect("a")[0].get("href")
+                date = article.cssselect("span.date")[0].text
+                if lp and (DATE.parse(date) - DATE.parse(lp)).days < 0:
+                    flag = 0
+                    break
 
-            else:
-                returnee.append(url)
+                else:
+                    returnee.append(url)
 
     return returnee
 

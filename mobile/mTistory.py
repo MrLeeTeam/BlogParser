@@ -11,8 +11,11 @@ import requests
 import re
 
 def main():
-    print get_article("http://starter123.tistory.com/m/76")['content']
-
+    a= get_article("http://starter123.tistory.com/m/76")
+    #b= get_article_list("http://pongzzang.tistory.com")
+    b = get_article_list("http://rlgns758.tistory.com")
+    print b
+    #print a['content']
 
 def get_article(url, mode=None):
 
@@ -51,7 +54,7 @@ def get_article(url, mode=None):
 
     article.remove(article.cssselect("div.section_writing")[0])
 
-    returnee["content"] = st.refine_text(html.tostring(article), encoding=charset).decode("utf-8", "ignore").encode("utf8")
+    returnee["content"] = st.refine_text(html.tostring(article), encoding=charset).decode("utf8", "ignore").encode("utf8")
 
     returnee["images"] = get_images(article)
     returnee["post_id"] = url[url.rfind("/")+1:]
@@ -79,16 +82,17 @@ def get_article_list(host, lp=None):
             continue
         tree = html.fromstring(re.text)
 
-        articles = tree.cssselect("ul#articleList")[0].cssselect("li")
+        lists  = tree.cssselect("ul#articleList")
+        for list in lists:
+            articles =  list.cssselect("li")
+            for article in articles:
+                url = host + article.cssselect("a")[0].get("href")
+                if lp and (DATE.parse(article.cssselect("span.datetime")[0].text) - DATE.parse(lp)).days < 0:
+                    flag = 0
+                    break
 
-        for article in articles:
-            url = host + article.cssselect("a")[0].get("href")
-            if lp and (DATE.parse(article.cssselect("span.datetime")[0].text) - DATE.parse(lp)).days < 0:
-                flag = 0
-                break
-
-            else:
-                returnee.append(url)
+                else:
+                    returnee.append(url)
 
         if not "tPostController.getPost" in re.text or not "nextPage" in re.text:
             flag = 0

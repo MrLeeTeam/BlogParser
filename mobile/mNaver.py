@@ -10,8 +10,12 @@ from dateutil import parser as DATE
 def main():
     try:
         #a= get_article("http://m.blog.naver.com/zeminica7/80009913680")
-        a= get_article("http://m.blog.naver.com/cyber3208/60163282137")
-        print a["content"]
+        #a= get_article("http://m.blog.naver.com/cyber3208/60163282137")
+        #print a["content"]
+        #b = get_article_list("http://blog.naver.com/skye20")
+        #b= get_article_list("http://blog.naver.com/ulmink")
+
+        print len(b)
     except Exception, e:
         print "error", e.message
     #list = get_article_list("http://m.blog.naver.com/zeminica7", None)
@@ -86,12 +90,15 @@ def get_article_list(host, lp=None):
         if curPage is not None and int(curPage.group(1)) == page:
             tree = html.fromstring(req.text)
 
-            articles = tree.cssselect("ul.blog_u")[0].cssselect("li")
 
-            for article in articles:
-                post_id = article.get("id")
-                post_id = "/" + post_id.replace("postLi_", "")
-                returnee.append(host + post_id)
+            groups = tree.cssselect("ul.blog_u")
+            for group in groups:
+                articles = group.cssselect("li")
+
+                for article in articles:
+                    post_id = article.get("id")
+                    post_id = "/" + post_id.replace("postLi_", "")
+                    returnee.append(host + post_id)
 
             page += 1
 
