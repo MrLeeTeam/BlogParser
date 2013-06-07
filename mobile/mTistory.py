@@ -11,11 +11,13 @@ import requests
 import re
 
 def main():
-    a= get_article("http://starter123.tistory.com/m/76")
+    #a= get_article("http://starter123.tistory.com/m/76")
+    a = get_article("http://black2white.tistory.com/m/post/view/id/4")
+    print a['content']
+
     #b= get_article_list("http://pongzzang.tistory.com")
-    b = get_article_list("http://rlgns758.tistory.com")
-    print b
-    #print a['content']
+    #b = get_article_list("http://rlgns758.tistory.com")
+    #print b
 
 def get_article(url, mode=None):
 
@@ -52,7 +54,13 @@ def get_article(url, mode=None):
     for script in scripts:
         script.getparent().remove(script)
 
-    article.remove(article.cssselect("div.section_writing")[0])
+    sections = article.cssselect("div.section_writing")
+    for section in sections:
+        article.remove(section)
+
+    snss = article.cssselect("div.sns")
+    for sns in snss:
+        article.remove(sns)
 
     returnee["content"] = st.refine_text(html.tostring(article), encoding=charset).decode("utf8", "ignore").encode("utf8")
 
