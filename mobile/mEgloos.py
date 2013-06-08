@@ -87,8 +87,8 @@ def get_article_list(host, lp=None):
 
     prev_list = tree.cssselect("ul.prev_list")
 
-    if prev_list is None:
-        return
+    if prev_list is None or len(prev_list) == 0:
+        return returnee
     year_list = prev_list[0].cssselect("li")
 
     for year in year_list:
