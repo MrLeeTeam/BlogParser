@@ -12,7 +12,10 @@ import datetime
 
 def main():
     #print get_article_list("http://kaengphan.egloos.com")
-    print get_article("http://kaengphan.egloos.com/m/11024115")["content"]
+    #print get_article("http://kaengphan.egloos.com/m/11024115")["content"]
+
+    b = get_article_list("http://gilai.egloos.com")
+    print len(b)
 
 
 def get_article(url, mode=None):
@@ -81,7 +84,12 @@ def get_article_list(host, lp=None):
 
     re = requests.get(host + "/m/archives", timeout=5.0)
     tree = html.fromstring(re.text)
-    year_list = tree.cssselect("ul.prev_list")[0].cssselect("li")
+
+    prev_list = tree.cssselect("ul.prev_list")
+
+    if prev_list is None:
+        return
+    year_list = prev_list[0].cssselect("li")
 
     for year in year_list:
         year_url = year.get("onclick")
