@@ -12,7 +12,8 @@ import re
 
 def main():
     #a= get_article("http://starter123.tistory.com/m/76")
-    a = get_article("http://black2white.tistory.com/m/post/view/id/4")
+    #a = get_article("http://black2white.tistory.com/m/post/view/id/4")
+    a = get_article("http://cyborgninja.tistory.com/m/post/view/id/10")
     print a['content']
 
     #b= get_article_list("http://pongzzang.tistory.com")
@@ -40,8 +41,14 @@ def get_article(url, mode=None):
     date = owner_info.cssselect("span.datetime")[0]
 
     owner_info.remove(date)
-    owner_info.remove(owner_info.cssselect("span.txt_bar")[0])
-    owner_info.remove(owner_info.cssselect("span.category_info")[0])
+
+    txt_bars = owner_info.cssselect("span.txt_bar")
+    for txt_bar in txt_bars:
+        owner_info.remove(txt_bar)
+
+    categories = owner_info.cssselect("span.category_info")
+    for cate in categories:
+        owner_info.remove(cate)
 
     name = owner_info
 
