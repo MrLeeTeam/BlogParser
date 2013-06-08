@@ -13,12 +13,14 @@ import re
 def main():
     #a= get_article("http://starter123.tistory.com/m/76")
     #a = get_article("http://black2white.tistory.com/m/post/view/id/4")
-    a = get_article("http://cyborgninja.tistory.com/m/post/view/id/10")
-    print a['content']
+    #a = get_article("http://cyborgninja.tistory.com/m/post/view/id/10")
+    #a = get_article("http://burnout4.tistory.com/m/post/view/id/32")
+    #print a['content']
 
     #b= get_article_list("http://pongzzang.tistory.com")
     #b = get_article_list("http://rlgns758.tistory.com")
-    #print b
+    b = get_article_list("http://markgraf.tistory.com")
+    print b
 
 def get_article(url, mode=None):
 
@@ -101,6 +103,11 @@ def get_article_list(host, lp=None):
         for list in lists:
             articles =  list.cssselect("li")
             for article in articles:
+
+                alinks = article.cssselect("a")
+
+                if alinks is None or len(alinks) == 0:
+                    continue
                 url = host + article.cssselect("a")[0].get("href")
                 if lp and (DATE.parse(article.cssselect("span.datetime")[0].text) - DATE.parse(lp)).days < 0:
                     flag = 0
