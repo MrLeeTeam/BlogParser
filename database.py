@@ -94,9 +94,6 @@ def get_meta():  # Set Flag, Get Host, Get Realm, Get Date
             b_id, url, realm, last_crawl, last_post = record
             succ_flag = True
 
-            cursor.execute("UPDATE blog_meta set crawler_id = %d where b_id = %d " % (crawler_id, b_id))
-            con.commit()
-
     except:
         print "get meta error"
         if con:

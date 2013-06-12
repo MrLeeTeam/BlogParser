@@ -14,13 +14,15 @@ def main():
     #a= get_article("http://starter123.tistory.com/m/76")
     #a = get_article("http://black2white.tistory.com/m/post/view/id/4")
     #a = get_article("http://cyborgninja.tistory.com/m/post/view/id/10")
-    #a = get_article("http://burnout4.tistory.com/m/post/view/id/32")
-    #print a['content']
+    a = get_article("http://namjelee.tistory.com/m/post/view/id/1")
+    print a['content']
+    #print a['name']
+    #print a
 
     #b= get_article_list("http://pongzzang.tistory.com")
     #b = get_article_list("http://rlgns758.tistory.com")
-    b = get_article_list("http://markgraf.tistory.com")
-    print b
+    #b = get_article_list("http://namjelee.tistory.com")
+    #print b
 
 def get_article(url, mode=None):
 
@@ -38,9 +40,10 @@ def get_article(url, mode=None):
     tree = html.fromstring(structure.text)
     body = tree.cssselect("div.wrap_posting")[0]
 
-    returnee["title"] = st.refine_text(html.tostring(body.cssselect("div.area_tit h2 a")[0]), encoding=charset)
+    returnee["title"] = st.refine_text(html.tostring(body.cssselect("div.area_tit h2 a")[0], encoding=charset, method="html"))
     owner_info = body.cssselect("span.owner_info")[0]
     date = owner_info.cssselect("span.datetime")[0]
+
 
     owner_info.remove(date)
 
@@ -54,7 +57,7 @@ def get_article(url, mode=None):
 
     name = owner_info
 
-    returnee["name"] = st.refine_text(html.tostring(name), encoding=charset)
+    returnee["name"] = st.refine_text(html.tostring(name, encoding=charset, method="text"))
     returnee["date"] = DATE.parse(st.refine_text(html.tostring(date), encoding=charset))
 
     article = body.cssselect("div.area_content")[0]
