@@ -14,9 +14,10 @@ def main():
     #a= get_article("http://starter123.tistory.com/m/76")
     #a = get_article("http://black2white.tistory.com/m/post/view/id/4")
     #a = get_article("http://cyborgninja.tistory.com/m/post/view/id/10")
-    a = get_article("http://namjelee.tistory.com/m/post/view/id/1")
+    #a = get_article("http://namjelee.tistory.com/m/post/view/id/1")
+    a = get_article("http://20111105.tistory.com/m/post/view/id/53")
     print a['content']
-    #print a['name']
+    print a['title']
     #print a
 
     #b= get_article_list("http://pongzzang.tistory.com")
@@ -40,7 +41,7 @@ def get_article(url, mode=None):
     tree = html.fromstring(structure.text)
     body = tree.cssselect("div.wrap_posting")[0]
 
-    returnee["title"] = st.refine_text(html.tostring(body.cssselect("div.area_tit h2 a")[0], encoding=charset, method="html"))
+    returnee["title"] = st.refine_text(html.tostring(body.cssselect("div.area_tit h2 a")[0], encoding=charset, method="text"))
     owner_info = body.cssselect("span.owner_info")[0]
     date = owner_info.cssselect("span.datetime")[0]
 

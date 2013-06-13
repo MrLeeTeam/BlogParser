@@ -19,7 +19,8 @@ def main():
     #a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=0591M&articleno=5356240&maxNo=13645718&minNo=5356240&maxDt=20080123155844&minDt=20051202160624&maxListNo=15738371&minListNo=15579000&maxListDt=20110107101928&minListDt=20080925175056&currentPage=6&beforePage=5&categoryId=")
     #a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=06YrG&articleno=13740502&maxNo=13740504&minNo=13740495&maxDt=20110105210824&minDt=20101014201958&maxListNo=13740518&minListNo=13740505&maxListDt=20110606160706&minListDt=20110202091009&currentPage=4&beforePage=3&categoryId=")
     #a = get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=07VYL&articleno=13350457&maxNo=13350462&minNo=13350453&maxDt=20130411015724&minDt=20130407223558&maxListNo=13350473&minListNo=13350464&maxListDt=20130413001744&minListDt=20130411020812&currentPage=12&beforePage=11&categoryId=")
-    #print a["content"]
+    a=get_article("http://m.blog.daum.net/_blog/_m/articleView.do?blogid=0JhZp&articleno=6613946&maxNo=6777764&minNo=6140834&maxDt=20080915114305&minDt=20080814183004&maxListNo=7337716&minListNo=6916391&maxListDt=20081010234149&minListDt=20080920230702&currentPage=24&beforePage=23&categoryId=")
+    print a["content"]
 
 
     #b = get_article_list("http://blog.daum.net/eyey-")
@@ -41,7 +42,12 @@ def get_article(url, mode=None):
     charset = structure.encoding
 
     tree = html.fromstring(structure.text)
-    body = tree.cssselect("div#daumContent")[0]
+    daum_content = tree.cssselect("div#daumContent")
+
+    if daum_content is None or len(daum_content) == 0:
+        return returnee
+
+    body = daum_content[0]
 
     #print dir(body)
 
