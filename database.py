@@ -1,6 +1,6 @@
 import psycopg2
 import datetime
-
+from  core import logger
 
 con = None
 crawler_id = None
@@ -40,7 +40,7 @@ def save_article(b_id, data):
             result = True
 
     except Exception, e:
-        print "## save error : %s " % e.message
+        logger.log("##DBERR save error : %s " % e.message)
         con.rollback()
     return result
 
@@ -51,11 +51,11 @@ def flag_rollback(b_id):
     try:
         cursor = con.cursor()
 
-        cursor.execute("UPDATE blog_meta set crawler_id = 0 where b_id = %s", b_id)
+        cursor.execute("UPDATE blog_meta set crawler_id = 0 where b_id = %s", [b_id])
         con.commit()
 
     except:
-        print "rollback flag error"
+        logger.log("##DBERR rollback flag error")
         if con:
             con.rollback()
 
@@ -70,7 +70,7 @@ def flag(b_id, sw):
         con.commit()
 
     except:
-        print "set flag error"
+        logger.log("##DBERR set flag error")
         if con:
             con.rollback()
 
@@ -87,15 +87,18 @@ def get_meta():  # Set Flag, Get Host, Get Realm, Get Date
 
     try:
         cursor = con.cursor()
-        cursor.execute("select * from get_noncrawled_meta()")
+        cursor.execute("select * from get_noncrawled_meta( %s )", [crawler_id])
 
         record = cursor.fetchone()
         if record:
             b_id, url, realm, last_crawl, last_post = record
             succ_flag = True
+            con.commit()
+        else:
+            con.rollback()
 
-    except:
-        print "get meta error"
+    except Exception, e:
+        logger.log("##DBERR get meta error :", e.message)
         if con:
             con.rollback()
 
